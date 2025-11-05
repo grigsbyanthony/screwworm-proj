@@ -1,17 +1,15 @@
 # ==================================================================================
-# Load required libraries
+# Clean approach: Subset phyloseq by species, then extract top taxa
 # ==================================================================================
+
 library(phyloseq)
 library(qiime2R)
 library(ggplot2)
 library(dplyr)
 library(tidyr)
-library(ggthemes)
-library(ggsignif)
-library(rstatix)
 
 # ==================================================================================
-# Load custom ggplot2 theme
+# Load custom ggplot2 theme (keeping your original theme)
 # ==================================================================================
 theme_pub <- function(base_size = 14, base_family = "CMU Sans Serif", legend_pos = "bottom") {
   ggthemes::theme_foundation(base_size = base_size, base_family = base_family) +
@@ -38,184 +36,276 @@ theme_pub <- function(base_size = 14, base_family = "CMU Sans Serif", legend_pos
 }
 
 # ==================================================================================
-# Import data from QIIME2 artifacts
+# Import data from QIIME2 artifacts (uncomment if needed)
 # ==================================================================================
-ps <- qiime2R::qza_to_phyloseq(
-  features = "merged-table-filtered-all.qza",
-  tree = "rooted-tree.qza",
-  taxonomy = "taxonomy.qza",
-  metadata = "metadata.tsv"
-)
+ ps <- qiime2R::qza_to_phyloseq(
+   features = "merged-table-filtered-all.qza",
+   tree = "rooted-tree.qza",
+   taxonomy = "taxonomy.qza",
+   metadata = "metadata.tsv"
+ )
 
 # Print original phyloseq object summary
 cat("Original phyloseq object:\n")
 print(ps)
 
 # ==================================================================================
-# Create species-specific phyloseq objects and extract top 50 ASVs
+# Configuration - Choose what to extract
 # ==================================================================================
 
-# Function to categorize microbiota as Endogenous or Exogenous
-categorize_microbiota <- function(genus, family) {
-  # Define endogenous (obligate symbionts) genera
-  endogenous_genera <- c("Wolbachia", "Spiroplasma", "Rickettsia", "Buchnera", 
-                        "Blochmannia", "Carsonella", "Portiera", "Hamiltonella",
-                        "Regiella", "Serratia", "Arsenophonus")
-  
-  # Define endogenous families (for cases where genus is NA)
-  endogenous_families <- c("Anaplasmataceae", "Rickettsiaceae", "Mycoplasmataceae")
-  
-  # Check if genus or family indicates endogenous microbiota
-  if (!is.na(genus) && genus %in% endogenous_genera) {
-    return("Endogenous")
-  } else if (!is.na(family) && family %in% endogenous_families) {
-    return("Endogenous") 
-  } else {
-    return("Exogenous")
-  }
-}
+# Choose what taxonomic level to analyze (you can change this)
+ANALYSIS_LEVEL <- "ASV"  # Options: "ASV", "Genus", "Family", "Order", "Class", "Phylum"
+N_TOP_TAXA <- 50         # Number of top taxa to extract
+USE_RELATIVE <- TRUE     # TRUE for relative abundance, FALSE for raw counts
 
-# Get unique species from metadata
+cat("\nAnalysis Configuration:\n")
+cat("- Taxonomic level:", ANALYSIS_LEVEL, "\n")
+cat("- Number of top taxa:", N_TOP_TAXA, "\n")
+cat("- Use relative abundance:", USE_RELATIVE, "\n")
+
+# ==================================================================================
+# Get species list and subset phyloseq objects
+# ==================================================================================
+
+# Get metadata and clean species names
 metadata <- as.data.frame(sample_data(ps))
+metadata$InsectSpecies <- trimws(as.character(metadata$InsectSpecies))
+
+# Get unique species
 species_list <- unique(metadata$InsectSpecies)
-cat("Processing", length(species_list), "insect species:\n")
-print(species_list)
+species_list <- species_list[!is.na(species_list) & species_list != ""]
 
-# Create directory for output files
-if (!dir.exists("top_asvs_by_species")) {
-  dir.create("top_asvs_by_species")
+cat("\nFound species:\n")
+for(i in 1:length(species_list)) {
+  cat(i, ".", species_list[i], "\n")
+}
+cat("Total species:", length(species_list), "\n")
+
+# ==================================================================================
+# Function to extract top taxa from a phyloseq object
+# ==================================================================================
+
+extract_top_taxa <- function(ps_subset, n_taxa = 50, level = "ASV", use_relative = TRUE) {
+  
+  # Transform to relative abundance if requested
+  if(use_relative) {
+    ps_subset <- transform_sample_counts(ps_subset, function(x) x / sum(x))
+  }
+  
+  # Get appropriate data based on analysis level
+  if(level == "ASV") {
+    # Use ASV-level data
+    otu_table <- as.data.frame(otu_table(ps_subset))
+    tax_table <- as.data.frame(tax_table(ps_subset))
+    
+    # Calculate mean abundance across samples for each ASV
+    mean_abundances <- rowMeans(otu_table)
+    
+    # Get top N ASVs
+    top_indices <- order(mean_abundances, decreasing = TRUE)[1:min(n_taxa, length(mean_abundances))]
+    top_asvs <- names(mean_abundances)[top_indices]
+    
+    # Create results table
+    results <- data.frame(
+      Rank = 1:length(top_asvs),
+      ASV_ID = top_asvs,
+      Mean_Abundance = mean_abundances[top_asvs],
+      stringsAsFactors = FALSE
+    )
+    
+    # Add taxonomy information
+    if(nrow(tax_table) > 0) {
+      tax_subset <- tax_table[top_asvs, , drop = FALSE]
+      results <- cbind(results, tax_subset)
+    }
+    
+  } else {
+    # Aggregate to specified taxonomic level
+    ps_glom <- tax_glom(ps_subset, taxrank = level, NArm = TRUE)
+    
+    # Get aggregated abundance table
+    otu_table_glom <- as.data.frame(otu_table(ps_glom))
+    tax_table_glom <- as.data.frame(tax_table(ps_glom))
+    
+    # Calculate mean abundance
+    mean_abundances <- rowMeans(otu_table_glom)
+    
+    # Get top N taxa
+    top_indices <- order(mean_abundances, decreasing = TRUE)[1:min(n_taxa, length(mean_abundances))]
+    top_taxa <- rownames(otu_table_glom)[top_indices]
+    
+    # Create results table
+    results <- data.frame(
+      Rank = 1:length(top_taxa),
+      Taxa_ID = top_taxa,
+      Mean_Abundance = mean_abundances[top_taxa],
+      stringsAsFactors = FALSE
+    )
+    
+    # Add taxonomy information
+    if(nrow(tax_table_glom) > 0) {
+      tax_subset <- tax_table_glom[top_taxa, , drop = FALSE]
+      results <- cbind(results, tax_subset)
+    }
+  }
+  
+  # Convert abundance to percentage if using relative abundance
+  if(use_relative) {
+    results$Mean_Abundance_Percent <- round(results$Mean_Abundance * 100, 4)
+    results$Mean_Abundance <- NULL  # Remove the decimal version
+  } else {
+    results$Mean_Abundance <- round(results$Mean_Abundance, 2)
+  }
+  
+  return(results)
 }
 
-# Initialize list to store all results for combined table
-all_species_results <- list()
-
+# ==================================================================================
 # Process each species individually
-for (i in seq_along(species_list)) {
-  species <- species_list[i]
-  cat("\n", paste0(strrep("=", 80)), "\n")
-  cat("PROCESSING SPECIES", i, "of", length(species_list), ":", species, "\n")
-  cat(paste0(strrep("=", 80)), "\n")
-  
-  # Create species-specific phyloseq object
-  species_samples <- metadata[metadata$InsectSpecies == species, ]
-  species_sample_names <- rownames(species_samples)
-  
-  # Subset phyloseq object to species-specific samples
-  ps_species <- prune_samples(species_sample_names, ps)
-  
-  # Remove ASVs with zero abundance in this species
-  ps_species <- prune_taxa(taxa_sums(ps_species) > 0, ps_species)
-  
-  cat("Species-specific phyloseq object:\n")
-  print(ps_species)
-  
-  # Convert to relative abundances
-  ps_species_rel <- transform_sample_counts(ps_species, function(x) x / sum(x))
-  
-  # Calculate mean relative abundance for each ASV
-  otu_table_species <- as.data.frame(otu_table(ps_species_rel))
-  tax_table_species <- as.data.frame(tax_table(ps_species_rel))
-  
-  # Calculate mean abundance across samples for this species
-  mean_abundances <- rowMeans(otu_table_species)
-  
-  # Get top 50 ASVs
-  top_50_indices <- order(mean_abundances, decreasing = TRUE)[1:min(50, length(mean_abundances))]
-  top_50_asvs <- names(mean_abundances)[top_50_indices]
-  top_50_abundances <- mean_abundances[top_50_indices]
-  
-  # Get taxonomy for top 50 ASVs
-  top_50_taxonomy <- tax_table_species[top_50_asvs, , drop = FALSE]
-  
-  # Create species table with microbiota categorization
-  species_data <- data.frame(
-    Rank = 1:length(top_50_asvs),
-    ASV_ID = top_50_asvs,
-    Kingdom = top_50_taxonomy$Kingdom,
-    Phylum = top_50_taxonomy$Phylum,
-    Class = top_50_taxonomy$Class,
-    Order = top_50_taxonomy$Order,
-    Family = top_50_taxonomy$Family,
-    Genus = top_50_taxonomy$Genus,
-    Species = top_50_taxonomy$Species,
-    Mean_Abundance_Percent = round(top_50_abundances * 100, 4),
-    stringsAsFactors = FALSE
-  )
-  
-  # Add microbiota category
-  species_data$Microbiota_Type <- mapply(categorize_microbiota, 
-                                       species_data$Genus, 
-                                       species_data$Family)
-  
-  # Separate into Endogenous and Exogenous
-  endogenous_data <- species_data[species_data$Microbiota_Type == "Endogenous", ]
-  exogenous_data <- species_data[species_data$Microbiota_Type == "Exogenous", ]
-  
-  # Print summary
-  cat("\nSUMMARY FOR", species, ":\n")
-  cat("Total ASVs found:", nrow(species_data), "\n")
-  cat("Endogenous microbiota ASVs:", nrow(endogenous_data), "\n")
-  cat("Exogenous microbiota ASVs:", nrow(exogenous_data), "\n")
-  
-  # Print top endogenous ASVs
-  if (nrow(endogenous_data) > 0) {
-    cat("\nTOP ENDOGENOUS MICROBIOTA:\n")
-    print(endogenous_data[1:min(10, nrow(endogenous_data)), c("Rank", "Genus", "Family", "Mean_Abundance_Percent")])
-  }
-  
-  # Print top exogenous ASVs  
-  if (nrow(exogenous_data) > 0) {
-    cat("\nTOP EXOGENOUS MICROBIOTA:\n")
-    print(exogenous_data[1:min(10, nrow(exogenous_data)), c("Rank", "Genus", "Family", "Mean_Abundance_Percent")])
-  }
-  
-  # Save individual CSV files
-  filename_all <- paste0("top_asvs_by_species/", gsub("[^A-Za-z0-9]", "_", species), "_top50_all_asvs.csv")
-  filename_endo <- paste0("top_asvs_by_species/", gsub("[^A-Za-z0-9]", "_", species), "_endogenous_asvs.csv")
-  filename_exo <- paste0("top_asvs_by_species/", gsub("[^A-Za-z0-9]", "_", species), "_exogenous_asvs.csv")
-  
-  write.csv(species_data, filename_all, row.names = FALSE)
-  write.csv(endogenous_data, filename_endo, row.names = FALSE)
-  write.csv(exogenous_data, filename_exo, row.names = FALSE)
-  
-  cat("Files saved:\n")
-  cat("- All ASVs:", filename_all, "\n")
-  cat("- Endogenous:", filename_endo, "\n")
-  cat("- Exogenous:", filename_exo, "\n")
-  
-  # Add species name and store for combined table
-  species_data$Insect_Species <- species
-  all_species_results[[i]] <- species_data
+# ==================================================================================
+
+# Create output directory
+if (!dir.exists("top_taxa_by_species")) {
+  dir.create("top_taxa_by_species")
 }
-
-# Create combined table with all species
-combined_table <- do.call(rbind, all_species_results)
-combined_table <- combined_table[, c("Insect_Species", "Rank", "ASV_ID", "Kingdom", "Phylum", 
-                                   "Class", "Order", "Family", "Genus", "Species", 
-                                   "Mean_Abundance_Percent", "Microbiota_Type")]
-
-# Save combined table
-write.csv(combined_table, "top_asvs_by_species/combined_all_species_top50_asvs.csv", row.names = FALSE)
-
-# Create summary statistics
-summary_stats <- combined_table %>%
-  group_by(Insect_Species, Microbiota_Type) %>%
-  summarise(
-    n_ASVs = n(),
-    total_abundance = sum(Mean_Abundance_Percent),
-    .groups = "drop"
-  ) %>%
-  pivot_wider(names_from = Microbiota_Type, 
-              values_from = c(n_ASVs, total_abundance),
-              values_fill = 0)
-
-write.csv(summary_stats, "top_asvs_by_species/microbiota_summary_by_species.csv", row.names = FALSE)
 
 cat("\n", paste0(strrep("=", 80)), "\n")
-cat("FINAL SUMMARY:\n")
-cat("Processed", length(species_list), "insect species\n")
-cat("Files created in 'top_asvs_by_species/' directory:\n")
-cat("- Individual species tables (all, endogenous, exogenous)\n")
-cat("- Combined table: combined_all_species_top50_asvs.csv\n")
-cat("- Summary statistics: microbiota_summary_by_species.csv\n")
+cat("PROCESSING SPECIES INDIVIDUALLY\n")
 cat(paste0(strrep("=", 80)), "\n")
+
+all_results <- list()
+successful_species <- 0
+
+for(species in species_list) {
+  
+  cat("\n--- Processing:", species, "---\n")
+  
+  # Subset phyloseq object to current species
+  species_samples <- rownames(metadata)[metadata$InsectSpecies == species]
+  
+  if(length(species_samples) == 0) {
+    cat("WARNING: No samples found for species:", species, "\n")
+    next
+  }
+  
+  cat("Found", length(species_samples), "samples for", species, "\n")
+  
+  # Create subset phyloseq object
+  ps_species <- prune_samples(species_samples, ps)
+  
+  # Remove ASVs that are not present in any sample of this species
+  ps_species <- prune_taxa(taxa_sums(ps_species) > 0, ps_species)
+  
+  cat("Phyloseq subset: ", ntaxa(ps_species), "ASVs,", nsamples(ps_species), "samples\n")
+  
+  # Skip if no taxa remain
+  if(ntaxa(ps_species) == 0) {
+    cat("WARNING: No taxa found for species:", species, "\n")
+    next
+  }
+  
+  # Extract top taxa
+  top_taxa_table <- extract_top_taxa(
+    ps_species, 
+    n_taxa = N_TOP_TAXA, 
+    level = ANALYSIS_LEVEL,
+    use_relative = USE_RELATIVE
+  )
+  
+  cat("Extracted", nrow(top_taxa_table), "top", ANALYSIS_LEVEL, "for", species, "\n")
+  
+  # Save individual CSV file
+  clean_species_name <- gsub("[^A-Za-z0-9_]", "_", species)
+  clean_species_name <- gsub("_{2,}", "_", clean_species_name)
+  
+  abundance_type <- if(USE_RELATIVE) "relative" else "raw"
+  filename <- paste0("top_taxa_by_species/", clean_species_name, "_top_", N_TOP_TAXA, "_", ANALYSIS_LEVEL, "_", abundance_type, ".csv")
+  
+  write.csv(top_taxa_table, filename, row.names = FALSE)
+  cat("Saved:", filename, "\n")
+  
+  # Store results for combined table
+  top_taxa_table$InsectSpecies <- species
+  all_results[[species]] <- top_taxa_table
+  
+  # Print preview
+  cat("Top 3 entries:\n")
+  print(head(top_taxa_table[, 1:min(5, ncol(top_taxa_table))], 3))
+  
+  successful_species <- successful_species + 1
+}
+
+# ==================================================================================
+# Create combined table
+# ==================================================================================
+
+if(length(all_results) > 0) {
+  
+  cat("\n--- Creating Combined Table ---\n")
+  
+  # Combine all results
+  combined_results <- do.call(rbind, all_results)
+  
+  # Reorder columns to put species first
+  col_order <- c("InsectSpecies", setdiff(names(combined_results), "InsectSpecies"))
+  combined_results <- combined_results[, col_order]
+  
+  # Rename for clarity
+  names(combined_results)[1] <- "Insect_Species"
+  
+  # Save combined table
+  abundance_type <- if(USE_RELATIVE) "relative" else "raw"
+  combined_filename <- paste0("top_taxa_by_species/COMBINED_all_species_top_", N_TOP_TAXA, "_", ANALYSIS_LEVEL, "_", abundance_type, ".csv")
+  
+  write.csv(combined_results, combined_filename, row.names = FALSE)
+  cat("Combined table saved:", combined_filename, "\n")
+  
+  # Summary by species
+  species_summary <- combined_results %>%
+    group_by(Insect_Species) %>%
+    summarise(
+      n_taxa = n(),
+      .groups = "drop"
+    )
+  
+  cat("\nSummary by species:\n")
+  print(species_summary)
+}
+
+# ==================================================================================
+# Final Summary
+# ==================================================================================
+
+cat("\n", paste0(strrep("=", 80)), "\n")
+cat("FINAL SUMMARY\n")
+cat(paste0(strrep("=", 80)), "\n")
+cat("Analysis level:", ANALYSIS_LEVEL, "\n")
+cat("Abundance type:", if(USE_RELATIVE) "Relative abundance (%)" else "Raw counts", "\n")
+cat("Number of top taxa extracted:", N_TOP_TAXA, "\n")
+cat("Total species in dataset:", length(species_list), "\n")
+cat("Successfully processed species:", successful_species, "\n")
+cat("Output directory: top_taxa_by_species/\n")
+
+if(successful_species < length(species_list)) {
+  failed_species <- setdiff(species_list, names(all_results))
+  cat("\nSpecies that couldn't be processed:\n")
+  for(sp in failed_species) {
+    cat("  -", sp, "\n")
+  }
+}
+
+cat("\nFiles created:\n")
+cat("- Individual CSV files for each species\n")
+cat("- Combined CSV file with all species\n")
+cat(paste0(strrep("=", 80)), "\n")
+
+# ==================================================================================
+# Quick verification
+# ==================================================================================
+
+cat("\nQuick verification - files created:\n")
+files_created <- list.files("top_taxa_by_species", pattern = "\\.csv$")
+cat("Number of files:", length(files_created), "\n")
+for(file in files_created) {
+  cat(" -", file, "\n")
+}
