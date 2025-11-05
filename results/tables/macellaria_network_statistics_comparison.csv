@@ -1,0 +1,10 @@
+"Metric","Endogenous","Exogenous"
+"Nodes",184,157
+"Edges",2896,1762
+"Density",0.172012354478498,0.143883717132125
+"Diameter",4,4
+"Average Path Length",2.06218816821098,2.13996406990038
+"Clustering Coefficient",0.532332545556316,0.469026034402603
+"Positive Correlations",1795,1294
+"Negative Correlations",1101,468
+"Modularity",0.335781105476264,0.433998633681777

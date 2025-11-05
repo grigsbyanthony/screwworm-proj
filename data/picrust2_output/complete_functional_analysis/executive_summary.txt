@@ -1,0 +1,27 @@
+FUNCTIONAL CHARACTERIZATION SUMMARY
+Cochliomyia macellaria Endogenous Microbiota
+==========================================
+
+DATASET OVERVIEW:
+- Samples analyzed: 20
+- Total metabolic pathways detected: 471
+- Universal pathways (100% prevalence): 12
+- Core pathways (≥75% prevalence): 351
+
+FUNCTIONAL CAPACITY:
+- Dominant functional category: Biosynthesis
+- Most abundant pathway: peptidoglycan maturation (meso-diaminopimelate containing)
+- Number of functional categories: 11
+
+TOP 5 FUNCTIONAL CATEGORIES BY ABUNDANCE:
+1 Biosynthesis (201 pathways, 1851672 total abundance)
+2 Other Metabolic Pathways (54 pathways, 329562 total abundance)
+3 Degradation (147 pathways, 323103 total abundance)
+4 Energy Metabolism (20 pathways, 228014 total abundance)
+5 Salvage Pathways (15 pathways, 139449 total abundance)
+
+METABOLIC HIGHLIGHTS:
+- Energy metabolism pathways: 3
+- Biosynthesis pathways: 1
+- Degradation pathways: 1
+

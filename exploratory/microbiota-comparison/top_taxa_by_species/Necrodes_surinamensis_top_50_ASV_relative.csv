@@ -1,0 +1,51 @@
+"Rank","ASV_ID","Kingdom","Phylum","Class","Order","Family","Genus","Species","Mean_Abundance_Percent"
+1,"e8c4470cea2d0aad86e0fbaa03d2f750","d__Bacteria","Bacillota_I","Bacilli_A","Lactobacillales",NA,NA,NA,24.1726
+2,"b060079a052d8ef0971aa8faf2adb85c","d__Bacteria","Bacillota_I","Bacilli_A","Staphylococcales","Staphylococcaceae","Staphylococcus",NA,10.0029
+3,"04524511556ae43c41266c364d115459","d__Bacteria","Pseudomonadota","Gammaproteobacteria","Cardiobacteriales","Wohlfahrtiimonadaceae","Ignatzschineria",NA,9.3244
+4,"acccab8e28b5e2cfc41fb8ae64cbf978","d__Bacteria","Bacillota_I","Bacilli_A","Lactobacillales","Vagococcaceae","Vagococcus_A","Vagococcus_A lutrae",7.4229
+5,"25e08dfa67892716a163df95d0cb4652","d__Bacteria","Bacillota_I","Bacilli_A","Lactobacillales",NA,NA,NA,4.9061
+6,"69cb94bc7147e79c931c6c3fe7c5c4b1","d__Bacteria","Pseudomonadota","Gammaproteobacteria","Cardiobacteriales","Wohlfahrtiimonadaceae","Wohlfahrtiimonas","Wohlfahrtiimonas chitiniclastica",3.8962
+7,"922d33a2963d3e87a3d4df6b82371235","d__Bacteria","Bacillota_I","Bacilli_A","Staphylococcales","Staphylococcaceae","Staphylococcus",NA,3.6691
+8,"21610dcbd05af4529071c39e2997cf17","d__Bacteria","Bacillota_I","Bacilli_A","Bacillales_A","Planococcaceae","Metalysinibacillus",NA,3.192
+9,"4005f039311a1265dd8f02e81c3bbd8f","d__Bacteria","Bacillota_I","Bacilli_A","Lactobacillales","Enterococcaceae",NA,NA,2.5864
+10,"7339301f770131bd35e653eda2ac5106","d__Bacteria","Pseudomonadota","Gammaproteobacteria","Cardiobacteriales","Wohlfahrtiimonadaceae","Ignatzschineria","Ignatzschineria larvae",2.5111
+11,"f17aa6c7d60aa9f234c8ad6f97c17d47","d__Bacteria","Bacillota_I","Bacilli_A","Lactobacillales","Vagococcaceae","Vagococcus_B",NA,2.3832
+12,"9908fffab7ed4f3bec44cda2f5084d49","d__Bacteria","Bacillota_I","Bacilli_A","Lactobacillales","Enterococcaceae",NA,NA,2.15
+13,"88475c7df6235b7d68d8b1128b1d8d73","d__Bacteria","Bacillota_I","Bacilli_A","Lactobacillales",NA,NA,NA,1.4982
+14,"04edaa963304c466674c30f9f9bb087e","d__Bacteria","Bacillota_A_368345","Clostridia_258483","Peptostreptococcales","Peptostreptococcaceae_256921",NA,NA,1.4463
+15,"7b9c8d4a1896d84d92ab4820edd025a6","d__Bacteria","Bacillota_I","Bacilli_A","Staphylococcales","Staphylococcaceae","Mammaliicoccus_319278","Mammaliicoccus lentus",1.2835
+16,"6755be0886d71fa083effb1d8a810d69","d__Bacteria","Bacillota_I","Bacilli_A","Lactobacillales",NA,NA,NA,1.0576
+17,"69ec3e28b929c43933d0295750bb53aa","d__Bacteria","Actinomycetota","Actinomycetes","Actinomycetales","Micrococcaceae","Glutamicibacter",NA,1.0127
+18,"f40a4e449931e18bbc267129496cc5f4","d__Bacteria","Bacillota_I","Bacilli_A","Lactobacillales","Vagococcaceae","Vagococcus_B",NA,0.962
+19,"c71a0b723402b8d3e22b6af121320ea5","d__Bacteria","Pseudomonadota","Gammaproteobacteria","Cardiobacteriales","Wohlfahrtiimonadaceae","Ignatzschineria",NA,0.9503
+20,"e20080c3550b1318bbb29e84d651c014","d__Bacteria","Bacillota_I","Bacilli_A","Lactobacillales","Vagococcaceae","Vagococcus_B",NA,0.9343
+21,"26b49807524ea843053eb0ed326b69eb","d__Bacteria","Pseudomonadota","Gammaproteobacteria","Pseudomonadales_A_660879","Moraxellaceae","Psychrobacter",NA,0.7375
+22,"7b46269976203c4b677141e236344faf","d__Bacteria","Bacillota_A_368345","Clostridia_258483","Clostridiales","Clostridiaceae_222000","Clostridium_T","Clostridium_T cagae",0.6484
+23,"6a7a6fed3a850c6bab631c438c0556c4","d__Bacteria","Actinomycetota","Actinomycetes","Actinomycetales","Micrococcaceae","Glutamicibacter",NA,0.6302
+24,"720bbb0411edd2b97a8cc3d66e3b47e0","d__Bacteria","Bacillota_I","Bacilli_A","Lactobacillales","Vagococcaceae","Vagococcus_B",NA,0.5339
+25,"bdf8a26094624622d68509a87fa75ba7","d__Bacteria","Bacillota_I","Bacilli_A","Bacillales_B_310392","Bacillaceae_G","Bacillus_A",NA,0.5151
+26,"556864a5da3a811b67be9fc73488e926","d__Bacteria","Bacillota_I","Bacilli_A","Lactobacillales","Enterococcaceae",NA,NA,0.5026
+27,"4a6feebc6529ea1d4fe69492d45d4f34","d__Bacteria","Bacillota_I","Bacilli_A","Staphylococcales","Staphylococcaceae","Mammaliicoccus_319278","Mammaliicoccus vitulinus",0.48
+28,"babe12231a96c828ad12034473c36019","d__Bacteria","Pseudomonadota","Gammaproteobacteria","Cardiobacteriales","Wohlfahrtiimonadaceae","Wohlfahrtiimonas","Wohlfahrtiimonas populi",0.4557
+29,"f212ad3759f4319aaa51f9a2dc5be324","d__Bacteria","Bacillota_I","Bacilli_A","Bacillales_A","Planococcaceae",NA,NA,0.4426
+30,"3073690a8233475dcf5f6d739def1bb5","d__Bacteria","Bacillota_I","Bacilli_A","Bacillales_A","Planococcaceae","Savagea","Savagea sp009740415",0.4263
+31,"f5a804d142e6d51705b5e75147cfdaf8","d__Bacteria","Actinomycetota","Actinomycetes","Mycobacteriales","Mycobacteriaceae","Corynebacterium","Corynebacterium stationis",0.3994
+32,"bbaaa7ba236e2690282e5c3c9194e68e","d__Bacteria","Chloroflexota","Chloroflexia","Thermomicrobiales",NA,NA,NA,0.3403
+33,"31f71ce5b3e181687916a3ce57c0e880","d__Bacteria","Actinomycetota","Actinomycetes","Mycobacteriales","Mycobacteriaceae","Dietzia","Dietzia lutea",0.333
+34,"737c098d1007948d40e6cbaf904b72d9","d__Bacteria","Bacillota_I","Bacilli_A","Lactobacillales","Vagococcaceae","Vagococcus_B","Vagococcus_B fluvialis",0.3314
+35,"2eef049632564c8c90f7f53361789066","d__Bacteria","Bacillota_I","Bacilli_A","Bacillales_A","Planococcaceae","Sporosarcina","Sporosarcina ureilytica",0.3089
+36,"c0bd493b8ee3f248ce1b25e83e2b1737","d__Bacteria","Bacillota_I","Bacilli_A","Bacillales_A","Planococcaceae",NA,NA,0.2668
+37,"6172127887e2b9fc11985c09549f5e69","d__Bacteria","Actinomycetota","Actinomycetes","Mycobacteriales","Mycobacteriaceae","Gordonia_B_376796",NA,0.2448
+38,"5f858d28e5aa8f082a62e851316363b7","d__Bacteria","Actinomycetota","Actinomycetes","Mycobacteriales","Mycobacteriaceae","Corynebacterium","Corynebacterium urealyticum",0.2316
+39,"93663714dc8c5b78b489a0f7200ea4e1","d__Bacteria","Bacillota_I","Bacilli_A","Lactobacillales",NA,NA,NA,0.2232
+40,"20979f335a9c148e208fea9ff795b1f9","d__Bacteria","Pseudomonadota","Gammaproteobacteria","Cardiobacteriales","Wohlfahrtiimonadaceae",NA,NA,0.2229
+41,"5c664a2c162271deb11541a9030ac243","d__Bacteria","Bacillota_A_368345","Clostridia_258483","Clostridiales","Clostridiaceae_222000","Clostridium_T","Clostridium_T septicum",0.2176
+42,"ab45b15586ed915aaff3b2af4896478e","d__Bacteria","Bacteroidota","Bacteroidia","Flavobacteriales_B_877923","Weeksellaceae","Chryseobacterium_A_796612",NA,0.1826
+43,"e11797823365f8cfd8b44986f715c53e","d__Bacteria","Pseudomonadota","Gammaproteobacteria","Cardiobacteriales","Wohlfahrtiimonadaceae",NA,NA,0.1797
+44,"bc6c345a2feb70d3210ba7f89530c5b0","d__Bacteria","Bacillota_I","Bacilli_A","Staphylococcales","Salinicoccaceae","Jeotgalicoccus_A_310962",NA,0.1777
+45,"65641452be75528754b5ae258ba661c1","d__Bacteria","Bacillota_I","Bacilli_A","Lactobacillales","Aerococcaceae","Aerococcus",NA,0.1646
+46,"006b143faa42f599250d6c44da161607","d__Bacteria","Bacillota_A_368345","Clostridia_258483","Oscillospirales","Ruminococcaceae",NA,NA,0.1571
+47,"5ccd30281011c170e7e836bc752205e6","d__Bacteria","Pseudomonadota","Gammaproteobacteria","Pseudomonadales_A_660879","Moraxellaceae","Psychrobacter","Psychrobacter pulmonis",0.1431
+48,"4f4800184a5b1352ceb267eaf35d2e41","d__Bacteria","Actinomycetota","Actinomycetes","Actinomycetales","Micrococcaceae","Glutamicibacter","Glutamicibacter soli",0.1395
+49,"b3d2cc3b9f0184830bec2ef73bcc6166","d__Bacteria","Bacillota_I","Bacilli_A","Lactobacillales","Streptococcaceae","Lactococcus_A_343473",NA,0.1336
+50,"df4c03a471633d76e7e2f5beb8a78af7","d__Bacteria","Bacillota_I","Bacilli_A","Bacillales_A","Planococcaceae","Sporosarcina",NA,0.1299
